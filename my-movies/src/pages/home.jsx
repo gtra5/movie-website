@@ -47,14 +47,14 @@ const MovieSlideShow = () => {
       <div className="px-6 py-6">
         <Slidesforhomp />
       </div>
-      <div className="px-6 py-6">
+      <div className="px-0 py-0 md:px-6 py-6">
         <Moviefilter />
       </div>
-      <div className="px-6 py-6">
+      <div className="px-0 py-0 md:px-6 py-6">
   <h1 className="text-3xl font font-bold px-6">Coming Soon</h1>
 
   {/* Horizontal scroll container */}
-  <div className="flex px-6 py-6 gap-6 hide-scrollbar overflow-x-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900 scroll-smooth">
+  <div className="flex gap-6 hide-scrollbar overflow-x-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900 scroll-smooth px-0 py-0 git add . md:px-6 py-6">
     {movies.map((m) => (
       <div
         key={m.id}

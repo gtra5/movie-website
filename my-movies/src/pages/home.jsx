@@ -39,7 +39,7 @@ const MovieSlideShow = () => {
       />
     ));
   };
-const movieCount = movies.length;
+
   const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w500";
 
   return (
@@ -58,19 +58,19 @@ const movieCount = movies.length;
     {movies.map((m) => (
       <div
         key={m.id}
-        className="flex-shrink-0 w-95 rounded-lg shadow text-white 
+        className="flex-shrink-0  rounded-lg shadow text-white 
                    transform transition-transform duration-500 ease-out 
-                   hover:scale-105 hover:shadow-2xl hover:brightness-110"
+                   hover:scale-105 hover:shadow-2xl hover:brightness-110 w-78 md:w-95"
       >
         <div
           className="relative flex flex-row gap-3 items-center bg-secondary/20 border-border border-2 border p-4 
-                     rounded-lg justify-between overflow-hidden group"
+                     rounded-tr-3xl rounded-bl-3xl justify-between overflow-hidden group"
         >
           {/* Big outlined number */}
           <h1
-            className="text-[150px] font-extrabold text-transparent stroke-text 
+            className="text-[100px] font-extrabold text-transparent stroke-text 
                         transform translate-y-10 group-hover:translate-y-0 
-                       transition-all duration-700 ease-in-out"
+                       transition-all duration-700 ease-in-out md:text-[150px]"
           >
             {movies.indexOf(m) + 1}
           </h1>
@@ -79,9 +79,9 @@ const movieCount = movies.length;
           <img
             src={m.poster_path ? `${TMDB_IMAGE_BASE}${m.poster_path}` : ""}
             alt={m.title || m.name || "Movie Poster"}
-            className="w-50 h-60 object-cover rounded-tr-3xl rounded-bl-3xl 
+            className="w-40 h-50 object-cover rounded-tr-3xl rounded-bl-3xl 
                        transition-transform duration-500 ease-in-out 
-                       group-hover:scale-110 group-hover:brightness-125"
+                       group-hover:scale-110 group-hover:brightness-125 md:w-50 h-60"
             loading="lazy"
           />
         </div>

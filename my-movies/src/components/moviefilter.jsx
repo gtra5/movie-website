@@ -2,11 +2,13 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Star } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 function Moviefilter() {
   const [genres, setGenres] = useState([]);
   const [selectedGenre, setSelectedGenre] = useState(28); // 🎬 Default to Action
   const [movies, setMovies] = useState([]);
+   const navigate = useNavigate();
 
   const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
   const GENRE_URL = `https://api.themoviedb.org/3/genre/movie/list?api_key=${API_KEY}`;
@@ -99,6 +101,7 @@ function Moviefilter() {
         movies.map((movie) => (
           <motion.div
             key={movie.id}
+             onClick={() => navigate(`/moviedetails/${movie.id}`)}
             whileHover={{ scale: 1.07 }}
             transition={{ duration: 0.3 }}
             className="group relative rounded-lg overflow-hidden cursor-pointer transform hover:shadow-xl transition duration-300"

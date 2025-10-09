@@ -3,6 +3,7 @@ import {
   createBrowserRouter,
 } from "react-router-dom";
 import Home from "./pages/home";
+import MovieDetails from "./pages/moviedetails";
 
 
 
@@ -12,6 +13,7 @@ function App() {
       children: [
         { path: "/", element: <Home /> },
         { path: "/home", element: <Home /> },
+        {path: "/moviedetails/:id", element: <MovieDetails /> }
        
       
       ],

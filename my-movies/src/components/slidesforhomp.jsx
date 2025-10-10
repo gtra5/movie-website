@@ -2,11 +2,13 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Star, Tv, Info } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 function Slidesforhomp() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [movies, setMovies] = useState([]);
   const [isMobile, setIsMobile] = useState(false);
+  const navigate = useNavigate();
 
   const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
   const API_URL = `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}`;
@@ -76,59 +78,67 @@ function Slidesforhomp() {
       {/* 📱 MOBILE VERSION */}
       {/* ------------------------------------------------ */}
       {isMobile && (
-  <div className="relative w-full overflow-hidden">
-    <AnimatePresence mode="wait">
-      <motion.div
-        key={currentIndex}
-        initial={{ x: "100%", opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        exit={{ x: "-100%", opacity: 0 }}
-        transition={{ duration: 0.8, ease: "easeInOut" }}
-        className="flex flex-col justify-end items-center text-white h-[28rem] w-full rounded-tr-3xl rounded-bl-3xl bg-cover bg-center border border-border relative"
-        style={{
-          backgroundImage: `url(${TMDB_IMAGE_BASE}${
-            currentMovie?.backdrop_path || ""
-          })`,
-        }}
-      >
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent rounded-tr-3xl rounded-bl-3xl" />
+        <div className="relative w-full overflow-hidden">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentIndex}
+              initial={{ x: "100%", opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: "-100%", opacity: 0 }}
+              transition={{ duration: 0.8, ease: "easeInOut" }}
+              className="flex flex-col justify-end items-center text-white h-[28rem] w-full rounded-tr-3xl rounded-bl-3xl bg-cover bg-center border border-border relative"
+              style={{
+                backgroundImage: `url(${TMDB_IMAGE_BASE}${
+                  currentMovie?.backdrop_path || ""
+                })`,
+              }}
+            >
+              {/* Gradient Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent rounded-tr-3xl rounded-bl-3xl" />
 
-        {/* Content at Bottom */}
-        <div className="relative z-10 w-full text-center px-4 pb-6 flex flex-col items-center">
-          <h1 className="text-xl font-bold mb-2">{currentMovie?.title}</h1>
+              {/* Content at Bottom */}
+              <div className="relative z-10 w-full text-center px-4 pb-6 flex flex-col items-center">
+                <h1 className="text-xl font-bold mb-2">
+                  {currentMovie?.title}
+                </h1>
 
-          <div className="flex gap-2 justify-center flex-wrap mb-2">
-            {genres.slice(0, 2).map((genre) => (
-              <span
-                key={genre}
-                className="text-xs bg-white/10 px-2 py-1 rounded-full border border-white/20"
-              >
-                {genre}
-              </span>
-            ))}
-          </div>
+                <div className="flex gap-2 justify-center flex-wrap mb-2">
+                  {genres.slice(0, 2).map((genre) => (
+                    <span
+                      key={genre}
+                      className="text-xs bg-white/10 px-2 py-1 rounded-full border border-white/20"
+                    >
+                      {genre}
+                    </span>
+                  ))}
+                </div>
 
-          <div className="flex items-center gap-1 mb-4">
-            <Star className="w-4 h-4 text-yellow-400" fill="yellow" />
-            <span className="text-sm font-medium">
-              {Math.round(currentMovie?.vote_average * 10) / 10}
-            </span>
-          </div>
+                <div className="flex items-center gap-1 mb-4">
+                  <Star className="w-4 h-4 text-yellow-400" fill="yellow" />
+                  <span className="text-sm font-medium">
+                    {Math.round(currentMovie?.vote_average * 10) / 10}
+                  </span>
+                </div>
 
-          <div className="flex gap-3">
-            <button className="px-5 py-2 bg-white text-gray-900 rounded-xl flex items-center gap-2 font-semibold">
-              <Tv className="w-4 h-4 inline-block " /> Play
-            </button>
-            <button className="px-5 py-2 border border-white rounded-xl flex items-center gap-2 font-semibold">
-              <Info className="w-4 h-4 inline-block " /> Info
-            </button>
-          </div>
+                <div className="flex gap-3">
+                  <button
+                    className="px-5 py-2 bg-white text-gray-900 rounded-xl flex items-center gap-2 font-semibold"
+                    onClick={() => navigate(`/moviedetails/${currentMovie.id}`)}
+                  >
+                    <Tv className="w-4 h-4 inline-block " /> Play
+                  </button>
+                  <button
+                    className="px-5 py-2 border border-white rounded-xl flex items-center gap-2 font-semibold
+              onClick={() => navigate(`/moviedetails/${currentMovie.id}`)}"
+                  >
+                    <Info className="w-4 h-4 inline-block " /> Info
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </AnimatePresence>
         </div>
-      </motion.div>
-    </AnimatePresence>
-  </div>
-)}
+      )}
 
       {/* ------------------------------------------------ */}
       {/* 💻 DESKTOP VERSION */}
@@ -157,9 +167,7 @@ function Slidesforhomp() {
                     alt={currentMovie?.title || "Movie"}
                     className="flex w-50 h-60 object-cover rounded-tr-3xl rounded-bl-3xl shadow-xl border-gray-200 border-2 border "
                   />
-                  <h1 className="text-4xl font-bold">
-                    {currentMovie?.title}
-                  </h1>
+                  <h1 className="text-4xl font-bold">{currentMovie?.title}</h1>
                 </div>
 
                 {/* TOP-RIGHT RATING + GENRES */}
@@ -191,11 +199,13 @@ function Slidesforhomp() {
                   transition={{ duration: 0.6, ease: "easeOut" }}
                   className="absolute bottom-8 right-8 flex gap-4 z-10"
                 >
-                  <button className="flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-white text-gray-900 font-semibold shadow-md hover:bg-gray-200 hover:scale-105 transition-transform duration-300">
+                  <button className="flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-white text-gray-900 font-semibold shadow-md hover:bg-gray-200 hover:scale-105 transition-transform duration-300"
+                      onClick={() => navigate(`/moviedetails/${currentMovie.id}`)}>
                     <Tv strokeWidth={1.25} className="w-5 h-5" />
                     Play
                   </button>
-                  <button className="flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-transparent text-white font-semibold border border-white hover:bg-white/10 hover:scale-105 transition-all duration-300">
+                  <button className="flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-transparent text-white font-semibold border border-white hover:bg-white/10 hover:scale-105 transition-all duration-300"
+                      onClick={() => navigate(`/moviedetails/${currentMovie.id}`)}>
                     <Info strokeWidth={1.75} className="w-5 h-5" />
                     More Info
                   </button>

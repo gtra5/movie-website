@@ -1,10 +1,9 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Layout from "../result";
-import { Star } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Star, Tv, Info } from "lucide-react";
 
 export default function MovieDetails() {
   const { id } = useParams();
@@ -39,41 +38,40 @@ export default function MovieDetails() {
   };
 
   useEffect(() => {
-  const fetchMovieDetails = async () => {
-    try {
-      const [movieRes, videoRes, recRes] = await Promise.all([
-        axios.get(`https://api.themoviedb.org/3/movie/${id}?api_key=${API_KEY}`),
-        axios.get(`https://api.themoviedb.org/3/movie/${id}/videos?api_key=${API_KEY}`),
-        axios.get(`https://api.themoviedb.org/3/movie/${id}/recommendations?api_key=${API_KEY}`)
-      ]);
+    const fetchMovieDetails = async () => {
+      try {
+        const [movieRes, videoRes, recRes] = await Promise.all([
+          axios.get(`https://api.themoviedb.org/3/movie/${id}?api_key=${API_KEY}`),
+          axios.get(`https://api.themoviedb.org/3/movie/${id}/videos?api_key=${API_KEY}`),
+          axios.get(`https://api.themoviedb.org/3/movie/${id}/recommendations?api_key=${API_KEY}`)
+        ]);
 
-      setMovie(movieRes.data);
-      setRecommendations(recRes.data.results || []);
+        setMovie(movieRes.data);
+        setRecommendations(recRes.data.results || []);
 
-      const officialTrailer = videoRes.data.results.find(
-        (v) =>
-          v.type === "Trailer" &&
-          v.site === "YouTube" &&
-          (v.name.toLowerCase().includes("official") ||
-            v.name.toLowerCase().includes("trailer"))
-      );
+        const officialTrailer = videoRes.data.results.find(
+          (v) =>
+            v.type === "Trailer" &&
+            v.site === "YouTube" &&
+            (v.name.toLowerCase().includes("official") ||
+              v.name.toLowerCase().includes("trailer"))
+        );
 
-      if (officialTrailer) {
-        setTrailerKey(officialTrailer.key);
-      } else {
-        const fallback = videoRes.data.results.find((v) => v.site === "YouTube");
-        if (fallback) setTrailerKey(fallback.key);
+        if (officialTrailer) {
+          setTrailerKey(officialTrailer.key);
+        } else {
+          const fallback = videoRes.data.results.find((v) => v.site === "YouTube");
+          if (fallback) setTrailerKey(fallback.key);
+        }
+
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } catch (error) {
+        console.error("Error fetching movie details:", error);
       }
+    };
 
-      // ✅ Scroll to top whenever a new movie loads
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    } catch (error) {
-      console.error("Error fetching movie details:", error);
-    }
-  };
-
-  fetchMovieDetails();
-}, [id, API_KEY]);
+    fetchMovieDetails();
+  }, [id, API_KEY]);
 
   if (!movie)
     return (
@@ -90,7 +88,9 @@ export default function MovieDetails() {
   return (
     <Layout>
       {/* ====== HERO SECTION ====== */}
-      <div className="relative w-full h-[60vh] md:h-[70vh] overflow-hidden rounded-tr-3xl rounded-bl-3xl">
+
+      {/* 🖥️ DESKTOP HERO */}
+      <div className="hidden md:block relative w-full h-[70vh] overflow-hidden rounded-tr-3xl rounded-bl-3xl">
         <motion.img
           src={`${TMDB_IMG}${movie.backdrop_path}`}
           alt={movie.title}
@@ -101,24 +101,6 @@ export default function MovieDetails() {
         />
 
         <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-transparent" />
-
-        <motion.div
-          className="absolute top-6 right-6 text-white z-10"
-          initial={{ opacity: 0, y: -25 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6, duration: 0.6, ease: "easeOut" }}
-        >
-          <div className="flex flex-wrap justify-end gap-2 max-w-xs">
-            {genreList.slice(0, 3).map((genre) => (
-              <span
-                key={genre}
-                className="bg-white/10 backdrop-blur-sm px-3 py-1 rounded-full text-sm border border-white/20"
-              >
-                {genre}
-              </span>
-            ))}
-          </div>
-        </motion.div>
 
         <motion.div
           className="absolute bottom-10 left-6 rounded-tr-3xl rounded-bl-3xl overflow-hidden shadow-lg border border-white/20"
@@ -139,7 +121,7 @@ export default function MovieDetails() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.2, duration: 0.8, ease: "easeOut" }}
         >
-          <h1 className="text-3xl w-150 md:text-5xl font-bold drop-shadow-lg mb-3">
+          <h1 className="text-5xl font-bold drop-shadow-lg mb-3">
             {movie.title}
           </h1>
           <div className="flex items-center justify-end gap-2 text-yellow-400">
@@ -151,7 +133,39 @@ export default function MovieDetails() {
         </motion.div>
       </div>
 
-      {/* ====== DETAILS SECTION ====== */}
+      {/* 📱 MOBILE HERO */}
+      <div
+        className="block md:hidden relative w-full h-[30rem]  border border-border bg-cover bg-center overflow-hidden"
+        style={{
+          backgroundImage: `url(${TMDB_IMAGE_BASE}${movie.backdrop_path})`,
+        }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/50 to-transparent" />
+
+        <div className="absolute bottom-0 z-10 text-center px-4 pb-8 w-full text-white">
+          <h1 className="text-2xl font-bold mb-2">{movie.title}</h1>
+          <div className="flex justify-center gap-2 mb-2">
+            {genreList.slice(0, 2).map((genre) => (
+              <span
+                key={genre}
+                className="bg-white/10 border border-white/20 rounded-full px-3 py-1 text-xs"
+              >
+                {genre}
+              </span>
+            ))}
+          </div>
+          <div className="flex justify-center items-center gap-2 mb-4 text-yellow-400">
+            <Star className="w-4 h-4 fill-yellow-400" />
+            <span className="text-sm font-semibold">
+              {movie.vote_average?.toFixed(1)}
+            </span>
+          </div>
+
+         
+        </div>
+      </div>
+
+      {/* ====== REST OF DETAILS SECTION ====== */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8 px-6">
         <div className="space-y-4">
           <h1 className="text-white font-bold text-2xl">Movie Trailer</h1>
@@ -172,7 +186,7 @@ export default function MovieDetails() {
             />
           ) : (
             <p className="text-gray-400">
-              Trailer not available. Searching YouTube instead:
+              Trailer not available. Try searching YouTube:
               <br />
               <a
                 href={`https://www.youtube.com/results?search_query=${encodeURIComponent(
@@ -218,8 +232,8 @@ export default function MovieDetails() {
             recommendations.map((m, index) => (
               <motion.div
                 key={m.id}
-                  onClick={() => navigate(`/moviedetails/${m.id}`)}
-                className="flex-shrink-0  rounded-lg shadow text-white 
+                onClick={() => navigate(`/moviedetails/${m.id}`)}
+                className="flex-shrink-0 rounded-lg shadow text-white 
                    transform transition-transform duration-500 ease-out 
                    hover:scale-105 hover:shadow-2xl hover:brightness-110 w-78 md:w-95"
                 whileHover={{ y: -5 }}
@@ -228,7 +242,6 @@ export default function MovieDetails() {
                   className="relative flex flex-row gap-3 items-center bg-secondary/20 border-border border-2 border p-4 
                      rounded-tr-3xl rounded-bl-3xl justify-between overflow-hidden group"
                 >
-                  {/* Rank number */}
                   <h1
                     className="text-[100px] font-extrabold text-transparent stroke-text 
                         transform translate-y-10 group-hover:translate-y-0 
@@ -237,9 +250,7 @@ export default function MovieDetails() {
                     {index + 1}
                   </h1>
 
-                  {/* Poster */}
                   <img
-                  onClick={() => navigate(`/moviedetails/${m.id}`)}
                     src={
                       m.poster_path
                         ? `${TMDB_IMAGE_BASE}${m.poster_path}`

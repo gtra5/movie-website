@@ -1,12 +1,15 @@
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { Search, Bell, User } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export function Header() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [showResults, setShowResults] = useState(false);
+  const [showMobileSearch, setShowMobileSearch] = useState(false);
   const searchRef = useRef(null);
+  const navigate = useNavigate();
 
   const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
   const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w200";
@@ -47,11 +50,21 @@ export function Header() {
     const handleClickOutside = (e) => {
       if (searchRef.current && !searchRef.current.contains(e.target)) {
         setShowResults(false);
+        setShowMobileSearch(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Navigate to SearchPage
+  const handleSearchSubmit = () => {
+    if (query.trim()) {
+      navigate(`/search?query=${encodeURIComponent(query)}`);
+      setShowResults(false);
+      setShowMobileSearch(false);
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-black/75">
@@ -92,7 +105,7 @@ export function Header() {
 
         {/* ====== SEARCH + ACTIONS ====== */}
         <div className="flex items-center gap-4" ref={searchRef}>
-          {/* Search Input */}
+          {/* Desktop Search Input */}
           <div className="relative hidden lg:block w-64">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <input
@@ -101,46 +114,72 @@ export function Header() {
               value={query}
               onFocus={() => setShowResults(true)}
               onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSearchSubmit();
+              }}
               className="h-9 w-full bg-secondary/60 border border-border pl-9 pr-3 text-sm text-white rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
             />
+          </div>
 
-            {/* Search Results Dropdown */}
-            {showResults && results.length > 0 && (
-              <div className="absolute top-10 left-0 w-full bg-black/90 border border-border rounded-md overflow-hidden shadow-lg z-50">
-                {results.map((movie) => (
-                  <a
-                    key={movie.id}
-                    href={`/movie/${movie.id}`}
-                    className="flex items-center gap-3 p-2 hover:bg-primary/20 transition"
-                    onClick={() => setShowResults(false)}
-                  >
-                    <img
-                      src={
-                        movie.poster_path
-                          ? `${TMDB_IMAGE_BASE}${movie.poster_path}`
-                          : "https://via.placeholder.com/50x75?text=No+Image"
-                      }
-                      alt={movie.title}
-                      className="w-10 h-14 object-cover rounded-md"
-                    />
-                    <span className="text-sm text-white line-clamp-2">
-                      {movie.title}
-                    </span>
-                  </a>
-                ))}
+          {/* Mobile Search */}
+          <div className="lg:hidden flex items-center">
+            <button
+              variant="ghost"
+              size="icon"
+              className="lg:hidden"
+              onClick={() => setShowMobileSearch((prev) => !prev)}
+            >
+              <Search className="h-5 w-5" />
+            </button>
+            {showMobileSearch && (
+              <div className="absolute top-16 left-0 w-full bg-black/90 border-b border-border px-6 py-4 z-50">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <input
+                    type="search"
+                    placeholder="Search movies..."
+                    value={query}
+                    onFocus={() => setShowResults(true)}
+                    onChange={(e) => setQuery(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") handleSearchSubmit();
+                    }}
+                    className="h-9 w-full bg-secondary/60 border border-border pl-9 pr-3 text-sm text-white rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                </div>
               </div>
             )}
           </div>
 
-          {/* Mobile Search Icon */}
-          <button
-            variant="ghost"
-            size="icon"
-            className="lg:hidden"
-            onClick={() => setShowResults((prev) => !prev)}
-          >
-            <Search className="h-5 w-5" />
-          </button>
+          {/* Search Results Dropdown */}
+          {showResults && results.length > 0 && (
+            <div className={`absolute w-full lg:w-64 bg-black/90 border border-border rounded-md overflow-hidden shadow-lg z-50 ${showMobileSearch ? 'top-28 left-0 px-6' : 'top-10 lg:top-10 lg:right-6'}`}>
+              {results.map((movie) => (
+                <button
+                  key={movie.id}
+                  onClick={() => {
+                    navigate(`/moviedetails/${movie.id}`);
+                    setShowResults(false);
+                    setShowMobileSearch(false);
+                  }}
+                  className="flex items-center gap-3 p-2 hover:bg-primary/20 transition text-left w-full"
+                >
+                  <img
+                    src={
+                      movie.poster_path
+                        ? `${TMDB_IMAGE_BASE}${movie.poster_path}`
+                        : "https://via.placeholder.com/50x75?text=No+Image"
+                    }
+                    alt={movie.title}
+                    className="w-10 h-14 object-cover rounded-md"
+                  />
+                  <span className="text-sm text-white line-clamp-2">
+                    {movie.title}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
 
           {/* Notifications */}
           <button variant="ghost" size="icon" className="hidden md:flex">

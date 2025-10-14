@@ -128,8 +128,8 @@ function Slidesforhomp() {
                     <Tv className="w-4 h-4 inline-block " /> Play
                   </button>
                   <button
-                    className="px-5 py-2 border border-white rounded-xl flex items-center gap-2 font-semibold
-              onClick={() => navigate(`/moviedetails/${currentMovie.id}`)}"
+                    className="px-5 py-2 border border-white rounded-xl flex items-center gap-2 font-semibold"
+              onClick={() => navigate(`/moviedetails/${currentMovie.id}`)}
                   >
                     <Info className="w-4 h-4 inline-block " /> Info
                   </button>

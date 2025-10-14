@@ -135,7 +135,7 @@ export default function MovieDetails() {
 
       {/* 📱 MOBILE HERO */}
       <div
-        className="block md:hidden relative w-full h-[30rem]  border border-border bg-cover bg-center overflow-hidden"
+        className="flex flex-col justify-end items-center text-white h-[28rem] w-full  bg-cover bg-center  relative md:hidden"
         style={{
           backgroundImage: `url(${TMDB_IMAGE_BASE}${movie.backdrop_path})`,
         }}

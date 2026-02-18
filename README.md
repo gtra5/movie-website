@@ -38,7 +38,7 @@ my-movies/
    npm run dev
    ```
 3. **Open your browser:**
-   Visit [http://localhost:5173](http://localhost:5173) to view the app.
+   Visit [http://localhost:5173](movie-website-self.vercel.app) to view the app.
 
 ## Scripts
 
@@ -49,3 +49,4 @@ my-movies/
 ## License
 
 This project is for educational purposes.
+
